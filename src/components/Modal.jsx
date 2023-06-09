@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import propTypes from 'prop-types';
 
-export const Modal = ({ offModal, imageURL }) => {
+export const Modal = ({ url, offModal }) => {
   const closeByEsc = useCallback(
     event => {
       if (event.key === 'Escape') {
@@ -13,9 +13,7 @@ export const Modal = ({ offModal, imageURL }) => {
 
   useEffect(() => {
     document.addEventListener('keydown', closeByEsc);
-  }, [closeByEsc]);
-  useEffect(() => {
-    return document.removeEventListener('keydown', closeByEsc);
+    return () => document.removeEventListener('keydown', closeByEsc);
   }, [closeByEsc]);
 
   const closeBackdrop = event => {
@@ -27,7 +25,7 @@ export const Modal = ({ offModal, imageURL }) => {
   return (
     <div className="overlay" onClick={closeBackdrop}>
       <div className="modal-img">
-        <img src={imageURL} alt="" width="1000" />
+        <img src={url} alt="" width="900" />
       </div>
     </div>
   );

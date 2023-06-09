@@ -13,7 +13,7 @@ export const App = () => {
   const [pictures, setPictures] = useState([]);
   const [showBtn, setshowBtn] = useState(false);
   const [isLoading, setisLoading] = useState(false);
-  const [imageURL, setimageURL] = useState('');
+  const [imageURL, setImageURL] = useState('');
 
   const changeState = query => {
     setQuery(query);
@@ -21,7 +21,7 @@ export const App = () => {
     setPictures([]);
     setshowBtn(false);
     setisLoading(false);
-    setimageURL('');
+    setImageURL('');
   };
 
   const handleClick = () => {
@@ -48,7 +48,7 @@ export const App = () => {
   }, [query, page]);
 
   const onModal = imageURL => {
-    setimageURL(imageURL);
+    setImageURL(imageURL);
   };
 
   return (
@@ -61,7 +61,7 @@ export const App = () => {
       )}
       {showBtn && <Button onClick={handleClick} />}
       {isLoading && <Loader />}
-      {imageURL && <Modal url={imageURL} offModal={onModal} />}
+      {imageURL && <Modal offModal={onModal} url={imageURL} />}
     </div>
   );
 };
