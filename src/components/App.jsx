@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import { Searchbar } from './Searchbar';
 import { ImageGallery } from './ImageGallery';
 import { ImageGalleryItem } from './ImageGalleryItem';
@@ -7,72 +7,61 @@ import { Button } from './Button';
 import { Modal } from './Modal';
 import { getImages } from 'service/imageAPI';
 
-export class App extends Component {
-  state = {
-    page: 1,
-    pictures: [],
-    showBtn: false,
-    isEmpty: false,
-    error: '',
-    isLoading: false,
-    imageURL: '',
+export const App = () => {
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [pictures, setPictures] = useState([]);
+  const [showBtn, setshowBtn] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
+  const [imageURL, setimageURL] = useState('');
+
+  const changeState = query => {
+    setQuery(query);
+    setPage(1);
+    setPictures([]);
+    setshowBtn(false);
+    setisLoading(false);
+    setimageURL('');
   };
 
-  changeState = query => {
-    this.setState({
-      query,
-      page: 1,
-      pictures: [],
-      showBtn: false,
-      isEmpty: false,
-      error: '',
-      isLoading: false,
-      imageURL: '',
-    });
+  const handleClick = () => {
+    setPage(page + 1);
   };
 
-  handleClick = () => {
-    this.setState(prev => ({
-      page: prev.page + 1,
-    }));
-  };
-
-  async componentDidUpdate(_, prevState) {
-    const { query, page } = this.state;
-    if (prevState.query !== query || prevState.page !== page) {
-      this.setState({ isLoading: true });
+  useEffect(() => {
+    async function update() {
       try {
+        setisLoading(true);
         const { hits, totalHits } = await getImages(query, page);
-        this.setState(prev => ({
-          pictures: [...prev.pictures, ...hits],
-          showBtn: page < Math.ceil(totalHits / 15),
-        }));
+        setPictures(prev => [...prev, ...hits]);
+        setshowBtn(page < Math.ceil(totalHits / 15));
       } catch (error) {
-        this.setState({ error: error.message });
+        console.log(error.message);
       } finally {
-        this.setState({ isLoading: false });
+        setisLoading(false);
       }
     }
-  }
+    if (!query) {
+      return;
+    }
+    update();
+  }, [query, page]);
 
-  onModal = imageURL => {
-    this.setState({ imageURL });
+  const onModal = imageURL => {
+    setimageURL(imageURL);
   };
 
-  render() {
-    const { pictures, showBtn, isLoading, imageURL } = this.state;
-    return (
-      <div className="app">
-        <Searchbar submit={this.changeState} />
-        {Boolean(pictures.length) && (
-          <ImageGallery>
-            <ImageGalleryItem pictures={pictures} onClick={this.onModal} />
-          </ImageGallery>
-        )}
-        {showBtn && <Button onClick={this.handleClick} />}
-        {isLoading && <Loader />}
-        {imageURL && <Modal url={imageURL} offModal={this.onModal} />}
-      </div>
-    );
-  }
-}
+  return (
+    <div className="app">
+      <Searchbar submit={changeState} />
+      {Boolean(pictures.length) && (
+        <ImageGallery>
+          <ImageGalleryItem pictures={pictures} onClick={onModal} />
+        </ImageGallery>
+      )}
+      {showBtn && <Button onClick={handleClick} />}
+      {isLoading && <Loader />}
+      {imageURL && <Modal url={imageURL} offModal={onModal} />}
+    </div>
+  );
+};

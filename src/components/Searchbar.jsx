@@ -1,47 +1,39 @@
-import { Component } from 'react';
+import { useState } from 'react';
 
-export class Searchbar extends Component {
-  state = {
-    query: '',
-  };
+export const Searchbar = ({ submit }) => {
+  const [query, setQuery] = useState('');
 
-  handleChange = event => {
-    this.setState({
-      query: event.target.value,
-    });
-  };
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
     const { value } = event.target.elements.query;
-    this.props.submit(value);
+    submit(value);
   };
 
-  render() {
-    return (
-      <header className="navbar navbar-light bg-light searchbar">
-        <form
-          className="form inline-block searchForm"
-          onSubmit={this.handleSubmit}
-        >
-          <button
-            type="submit"
-            className="btn btn-outline-success my-2 my-sm-0 searchForm-button"
-          >
-            Search
-          </button>
+  const handleChange = event => {
+    setQuery(event.target.value);
+  };
 
-          <input
-            name="query"
-            value={this.state.query}
-            className="form-control"
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            onChange={this.handleChange}
-          />
-        </form>
-      </header>
-    );
-  }
-}
+  return (
+    <header className="navbar navbar-light bg-light searchbar">
+      <form className="form inline-block searchForm" onSubmit={handleSubmit}>
+        <button
+          type="submit"
+          className="btn btn-outline-success my-2 my-sm-0 searchForm-button"
+        >
+          Search
+        </button>
+
+        <input
+          name="query"
+          value={query}
+          className="form-control"
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          onChange={handleChange}
+        />
+      </form>
+    </header>
+  );
+};
